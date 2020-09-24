@@ -127,8 +127,9 @@ if __name__ == '__main__':
     postProc(y_res, bnd)
 
     print('#!/usr/bin/env gnuplot')
-#    print('set term epslatex standalone header "\\\\input{macros.tex}"')
-    print('set term epslatex standalone color size 8, 4')
+#    print('set term epslatex standalone color size 8, 4')
+    print('set term png')
+
     print('set output "%s"' % output)
     print('set size square')
     print('set xlabel "%s"' % sys.argv[3])

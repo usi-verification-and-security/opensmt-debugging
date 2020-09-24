@@ -4,10 +4,14 @@ function get_abs_path {
   echo $(cd $(dirname $1); pwd)/$(basename $1)
 }
 
-ROOT=$(get_abs_path $(dirname $0))
+CLUSTER_BIN_ROOT=$(get_abs_path $(dirname $0))
+PLOTTING_BIN_ROOT=${CLUSTER_BIN_ROOT}/../../plotting/bin
 
-EXTRACTOR=${ROOT}/extract-results-osmt2.py
-GNUPLOTTOR=${ROOT}/make_scatterplot_time.py
+EXTRACTOR=${CLUSTER_BIN_ROOT}/extract_results_time_osmt2.sh
+GNUPLOTTOR=${PLOTTING_BIN_ROOT}/make_scatterplot_time.py
+PLOT_MAKEFILE=${PLOTTING_BIN_ROOT}/../Makefile
+
+export epstopdf=${PLOTTING_BIN_ROOT}/epstopdf
 
 if [ $# != 2 ]; then
     echo "Usage: $0 <x-axis-dir> <y-axis-dir>"
@@ -42,16 +46,24 @@ if [ ${x_track} != ${y_track} ]; then
     exit 1;
 fi
 
-${EXTRACTOR} ${xd} > ${xd}.list
-${EXTRACTOR} ${yd} > ${yd}.list
+echo "Extracting "
+#${EXTRACTOR} ${xd} > ${xd}.list
+#${EXTRACTOR} ${yd} > ${yd}.list
+echo "done."
+
 
 name=figures/${x_track}-${x_div}-${x_branch}-${x_date}_vs_${y_branch}-${y_date}
 
+mkdir -p figures
+
+echo "Plotting "
 ${GNUPLOTTOR} ${xd}.list ${yd}.list \
     "${x_branch} ${x_date}"\
     "${y_branch} ${y_date}" \
-    ${name}.tex > \
+    ${name}.png > \
     ${name}.gp
+echo "done."
 
-make ${name}.pdf
-
+echo "making "
+make -f ${PLOT_MAKEFILE} ${name}.png
+echo "done."
