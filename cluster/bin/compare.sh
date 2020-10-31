@@ -47,8 +47,8 @@ if [ ${x_track} != ${y_track} ]; then
 fi
 
 echo "Extracting "
-#${EXTRACTOR} ${xd} > ${xd}.list
-#${EXTRACTOR} ${yd} > ${yd}.list
+[[ ${xd}.list -nt ${xd} ]] || ${EXTRACTOR} ${xd} > ${xd}.list
+[[ ${yd}.list -nt {$yd} ]] || ${EXTRACTOR} ${yd} > ${yd}.list
 echo "done."
 
 
@@ -67,3 +67,6 @@ echo "done."
 echo "making "
 make -f ${PLOT_MAKEFILE} ${name}.png
 echo "done."
+
+echo "The figure is available in"
+echo $(pwd)/${name}.png

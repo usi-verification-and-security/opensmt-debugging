@@ -90,6 +90,8 @@ echo "Binary:"
 echo " - ${binary}"
 echo "Flavor:"
 echo " - ${flavor}"
+echo "Modification date:"
+echo " - $(date -r ${binary})"
 echo "Benchmark set (total ${n_benchmarks}):"
 echo " - ${bmpath}"
 
