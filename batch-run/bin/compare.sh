@@ -7,7 +7,8 @@ function get_abs_path {
 ROOT=$(get_abs_path $(dirname $0))
 
 EXTRACTOR=${ROOT}/extract-results-osmt2.py
-GNUPLOTTOR=${ROOT}/make_scatterplot_time.py
+GNUPLOTTOR=${ROOT}/../../plotting/bin/make_scatterplot_time.py
+GNUPLOTTORMAKEFILE=${ROOT}/../../plotting/Makefile
 
 if [ $# != 2 ]; then
     echo "Usage: $0 <x-axis-dir> <y-axis-dir>"
@@ -50,8 +51,9 @@ name=figures/${x_track}-${x_div}-${x_branch}-${x_date}_vs_${y_branch}-${y_date}
 ${GNUPLOTTOR} ${xd}.list ${yd}.list \
     "${x_branch} ${x_date}"\
     "${y_branch} ${y_date}" \
-    ${name}.tex > \
+    ${name}.png > \
     ${name}.gp
 
-make ${name}.pdf
+
+make -f ${GNUPLOTTORMAKEFILE} ${name}.png
 
