@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-osmt=~/bin/opensmt
+osmt=~/src/opensmt/build/opensmt
 validator=~/bin/ModelValidator
 
 usage="Usage: $0 [-h] [-o <opensmt>] [-v <modelvalidator>] <file.smt2>"
@@ -32,6 +32,9 @@ if [ $# == 0 ]; then
     exit 1
 fi
 
+# If there is no get-model, the result is by definition ok
+grep '(get-model)' $1 > /dev/null || exit 0
+
 model=$(tempfile).out
 ${osmt} $1 > ${model}
 
@@ -43,7 +46,7 @@ fi
 
 if [[ ${sat} == true ]]; then
     echo "Instance is sat.  Continuing"
-    ${validator} --smt2 ${1} --model=${model} |grep INVALID > /dev/null
+    ${validator} --smt2 ${1} --model=${model}
     res=$?
     echo "Result is ${res}"
 fi
