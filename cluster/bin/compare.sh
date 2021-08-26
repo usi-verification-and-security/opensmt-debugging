@@ -69,4 +69,4 @@ make -f ${PLOT_MAKEFILE} ${name}.png
 echo "done."
 
 echo "The figure is available in"
-echo $(pwd)/${name}.png
+echo ${USER}@hpc.ics.usi.ch:$(pwd)/${name}.png
