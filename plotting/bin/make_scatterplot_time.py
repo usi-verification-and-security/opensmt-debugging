@@ -3,7 +3,7 @@
 import sys
 
 # Change the timeout here if needed
-to = 7200
+to = 1200
 
 usage = """
 %s -- create scatter plot gnuplot scripts using tex driver
@@ -132,6 +132,7 @@ if __name__ == '__main__':
 
     print('set output "%s"' % output)
     print('set size square')
+    print('set size 0.8, 0.8')
     print('set xlabel "%s"' % sys.argv[3])
     print('set ylabel "%s"' % sys.argv[4])
     if (use_log):
