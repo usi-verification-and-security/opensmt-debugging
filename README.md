@@ -18,7 +18,12 @@ If you are a part of USI team, go through this steps first:
 4. Create folder with benchmark tests in your home directory called `~/benchmarks`
 5. Open `cluster/bin` folder in this repository
 6. Create empty file called `config.smt`
-7. Run benchmarks using `make-and-run-scripts.sh`, add flags to it, so command looks like this:
+7. Before running benchmarks upload modules needed by openSMT:
+```bash
+module load readline
+module load gmp
+```
+8. Run benchmarks using `make-and-run-scripts.sh`, add flags to it, so command looks like this:
 ```bash
 ./make-and-run-scripts.sh -b QF_LRA -c ./config.smt2
 ```
@@ -29,9 +34,17 @@ If you want to explore additional options, run
 ./make-and-run-scripts.sh -h
 ```
 
+*IMPORTANT:* opensmt executables should be built on Linux operating system to be executed on remote server.
+
 ### Benchmark comparison
 
+
+
 After you've executed the steps from the previous part you should've received 2 folders with scripts and their results.
+Before running comparison upload required module:
+```bash
+module load gnuplot
+```
 If you have 2 benchmark execution results you may compare their result by using `compare.sh` in the `cluster/bin` folder.
 To compare benchmarks run:
 ```sh
