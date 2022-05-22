@@ -6,12 +6,12 @@ function get_abs_path {
 
 SCRIPT_ROOT=$(get_abs_path $(dirname $0))
 
-BMBASE=${BMBASE:-/Users/usi/masoud/dev/OpenSMT2/regression}
-DEFAULTSMTS=${DEFAULTSMTS:-/Users/usi/masoud/dev/SMTS/server/smts.py }
+BMBASE=${BMBASE:-/home/hyvaerinen/benchmarks}
+DEFAULTSMTS=${DEFAULTSMTS:-/home/asadi/masoud/SMTS/server/smts.py}
 DEFAULTCONFIG=empty.smt2
 WORKSCRIPT=${SCRIPT_ROOT}/make_scripts_smts.sh
 
-usage="Usage: $0 [-h] [-o <smts-server>] [-c <config>] -b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL> [-f <flavor>] [-i true | false] [-m true | false]"
+usage="Usage: $0 [-h] [-s <smts-server>] [-c <config>] -b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL> [-f <flavor>] [-i true | false] [-m true | false]"
 
 incremental=false;
 produce_models=false;
@@ -22,7 +22,7 @@ while [ $# -gt 0 ]; do
         echo "${usage}"
         exit 1
         ;;
-      -o|--smts-server)
+      -s|--smts-server)
         smtServer=$2
         ;;
       -c|--config)
@@ -59,7 +59,7 @@ if [ -z ${config} ]; then
 fi
 
 if [ -z ${flavor} ]; then
-    flavor=$(basename $smtServer | sed 's/opensmt//g')
+    flavor=$(basename $smtServer | sed 's/smts//g')
     if [ -z ${flavor} ]; then
         flavor=master
     else
