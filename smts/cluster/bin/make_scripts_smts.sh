@@ -9,10 +9,10 @@ fi
 smts_server=$1; shift
 script_dir=$1; shift
 #work under linux
-outd=`readlink -e $1`; shift
+out_dir=`readlink -e $1`; shift
 
 #work under mac
-#outd=$(cd $(basename $1); pwd)
+#out_dir=$(cd $(basename $1); pwd)
 
 config=$1; shift
 
@@ -41,11 +41,11 @@ while [[ $# > 0 ]]; do
 #SBATCH --nodes=1
 #SBATCH --exclusive
 #SBATCH --mem=0
-#SBATCH --output=$outd/$script_name.out
-#SBATCH --error=$outd/$script_name.err
+#SBATCH --output=$out_dir/$script_name.out
+#SBATCH --error=$out_dir/$script_name.err
 
-smts_time=$outd/$script_name.smts
-output=$outd/$script_name
+smts_time=$out_dir/$script_name.smts
+output=$out_dir/$script_name
 
 config=${config}
 script=${smts_server}
@@ -64,9 +64,15 @@ __EOF__
   bunzip2 -c $ex > \${inp};
   sh -c "ulimit -St ${timeout};
   ulimit -Sv 4000000;
-  /usr/bin/time -o \${smts_time}.${i}.time -f 'user: %U system: %S wall: %e CPU: %PCPU' python3 \$script -o3 -p $((port+i)) -fp \$inp" || true; rm \${inp};
+  /usr/bin/time -o \${smts_time}.${i}.time -f 'user: %U system: %S wall: %e CPU: %PCPU' python3 \$script -o3 -l -p $((port+i)) -fp \$inp" || true; rm \${inp};
  ) > \$output.${i}.out 2> \$output.${i}.err;
- grep -v '^;' \$output.${i}.out > \$output.${i}.err.tmp &
+ out_path=\$output.\${i}
+ result=\$(<\$out_path)
+ echo $result
+if grep -q ";" <<< \$result; then
+  echo \$result >> \$out_path.out.err
+  echo '' > \$out_path.out
+fi &
 __EOF__
     done
     echo "wait" >> $script_dir/$script_name
