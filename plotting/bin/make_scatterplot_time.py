@@ -128,7 +128,7 @@ if __name__ == '__main__':
 
     print('#!/usr/bin/env gnuplot')
 #    print('set term epslatex standalone color size 8, 4')
-    print('set term png')
+    print('set term pngcairo')
 
     print('set output "%s"' % output)
     print('set size square')
