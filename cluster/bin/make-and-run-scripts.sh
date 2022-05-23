@@ -11,7 +11,7 @@ DEFAULTOSMT=${DEFAULTOSMT:-~/bin/opensmt}
 DEFAULTCONFIG=empty.smt2
 WORKSCRIPT=${SCRIPT_ROOT}/make_scripts_osmt2.sh
 
-usage="Usage: $0 [-h] [-o <osmt2-binary>] [-c <config>] -b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL> [-f <flavor>] [-i true | false] [-m true | false]"
+usage="Usage: $0 [-h] [-o <osmt2-binary>] [-c <config>] -b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL|QF_UFLRA|QF_UFLIA> [-f <flavor>] [-i true | false] [-m true | false]"
 
 incremental=false;
 produce_models=false;
@@ -101,6 +101,10 @@ elif [ ${benchmarks} == QF_RDL ]; then
     bmpath=${BMBASE}/QF_RDL;
 elif [ ${benchmarks} == QF_IDL ]; then
     bmpath=${BMBASE}/QF_IDL;
+elif [ ${benchmarks} == QF_UFLRA ]; then
+    bmpath=${BMBASE}/QF_UFLRA;
+elif [ ${benchmarks} == QF_UFLIA ]; then
+    bmpath=${BMBASE}/QF_UFLIA;
 else
     echo "Unknown benchmark ${benchmarks}"
     exit 1
