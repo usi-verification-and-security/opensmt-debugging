@@ -7,7 +7,7 @@ function get_abs_path {
 SCRIPT_ROOT=$(get_abs_path $(dirname $0))
 
 BMBASE=${BMBASE:-/home/hyvaerinen/benchmarks}
-DEFAULTSMTS=${DEFAULTSMTS:-/home/asadi/masoud/SMTS/server/smts.py}
+DEFAULTSMTS=${DEFAULTSMTS:-/home/masoud/SMTS/server/smts.py}
 DEFAULTCONFIG=empty.smt2
 WORKSCRIPT=${SCRIPT_ROOT}/make_scripts_smts.sh
 

@@ -12,7 +12,7 @@ script_dir=$1; shift
 out_dir=`readlink -e $1`; shift
 
 #work under mac
-#out_dir=$(cd $(basename $1); pwd)
+#out_dir=$(cd $(basename $1); pwd) shift
 
 config=$1; shift
 
@@ -66,12 +66,11 @@ __EOF__
   ulimit -Sv 4000000;
   /usr/bin/time -o \${smts_time}.${i}.time -f 'user: %U system: %S wall: %e CPU: %PCPU' python3 \$script -o3 -l -p $((port+i)) -fp \$inp" || true; rm \${inp};
  ) > \$output.${i}.out 2> \$output.${i}.err;
- out_path=\$output.\${i}
- result=\$(<\$out_path)
- echo $result
+ out_path=\$output.${i}
+ result=\$(<\$out_path.out)
 if grep -q ";" <<< \$result; then
-  echo \$result >> \$out_path.out.err
-  echo '' > \$out_path.out
+  echo \$result >> \$out_path.err
+  echo 'error' > \$out_path.out
 fi &
 __EOF__
     done
