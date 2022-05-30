@@ -63,15 +63,12 @@ __EOF__
   inp=/tmp/\$(basename \${script})-`basename $ex .bz2`;
   bunzip2 -c $ex > \${inp};
   sh -c "ulimit -St ${timeout};
-  ulimit -Sv 4000000;
+  ulimit -Sv 12000000;
   /usr/bin/time -o \${smts_time}.${i}.time -f 'user: %U system: %S wall: %e CPU: %PCPU' python3 \$script -o3 -l -p $((port+i)) -fp \$inp" || true; rm \${inp};
  ) > \$output.${i}.out 2> \$output.${i}.err;
  out_path=\$output.${i}
- result=\$(<\$out_path.out)
-if grep -q ";" <<< \$result; then
-  echo \$result >> \$out_path.err
-  echo 'error' > \$out_path.out
-fi &
+ result=\$(cat \$out_path.out)
+ grep '^;' \$result > /dev/null && (echo \$result >> \$out_path.err; echo error > \$out_path.out) &
 __EOF__
     done
     echo "wait" >> $script_dir/$script_name
