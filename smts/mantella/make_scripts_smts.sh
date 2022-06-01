@@ -60,8 +60,7 @@ __EOF__
   /usr/bin/time -o \${smts_time}.${i}.time -f 'user: %U system: %S wall: %e CPU: %PCPU' python3 \$script -o50 -l -p 3000 -fp \$inp" || true; rm \${inp};
  ) > \$output.${i}.out 2> \$output.${i}.err;
  out_path=\$output.${i}
- result=\$(cat \$out_path.out)
- grep '^;' \$result > /dev/null && (echo \$result >> \$out_path.err; echo error > \$out_path.out) &
+ grep '^;' \$out_path.out > /dev/null && (cat \$out_path.out >> \$out_path.err; echo error > \$out_path.out) &
 __EOF__
     done
     echo "wait" >> $script_dir/$script_name
