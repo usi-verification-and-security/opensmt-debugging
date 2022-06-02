@@ -7,7 +7,7 @@ BENCHMARKPATH=/u1/hyvaeria/smt-lib
 DEFAULTFLAVOR=master
 DEFAULTTRACK=non-incremental
 
-usage="Usage: $0 [-h] [-f <flavor>] [-c config] [-b <opensmt-path>] [-n <n-cpus>] -d <smtlib-logic> [-t incremental | non-incremental] [-m ask | noask]"
+usage="Usage: $0 [-h] [-f <flavor>] [-c config] [-b <opensmt-path>] [-n <n-cpus>] -d <smtlib-logic> [-t incremental | non-incremental] [-y ask | noask]"
 
 mode=ask
 
