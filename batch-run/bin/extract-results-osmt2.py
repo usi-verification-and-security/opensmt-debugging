@@ -7,6 +7,7 @@ import os.path
 
 UNKNOWN = 'indet'
 TIMEOUT = 'indet'
+MEMOUT = 'indet'
 TIMEOUT_VAL = 100
 
 if __name__ == '__main__':
@@ -30,7 +31,10 @@ if __name__ == '__main__':
         name = out_l[0].strip()
 
         if len(out_l) >= 2:
-            result = out_l[1].strip()
+            if re.search("memory exhausted", out_l[1]):
+                result = MEMOUT
+            else:
+                result = out_l[1].strip()
         elif re.search("Command terminated by signal 24",\
                 time_s[0].strip()):
             result = TIMEOUT
