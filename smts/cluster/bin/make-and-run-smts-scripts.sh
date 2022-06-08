@@ -11,9 +11,9 @@ DEFAULTSMTS=${DEFAULTSMTS:-/home/masoud/SMTS/server/smts.py}
 DEFAULTCONFIG=empty.smt2
 WORKSCRIPT=${SCRIPT_ROOT}/make_scripts_smts.sh
 
-usage="Usage: $0 [-h] [-s <smts-server>] [-c <config>] -b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL> [-f <flavor>] [-i true | false] [-m true | false]"
+usage="Usage: $0 [-h] [-s <smts-server>] [-l <lemma_sharing> true | false] [-c <config>] [-b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL>] [-f <flavor>] [-m true | false]"
 
-incremental=false;
+lemma_sharing=true;
 produce_models=false;
 
 while [ $# -gt 0 ]; do
@@ -34,8 +34,8 @@ while [ $# -gt 0 ]; do
       -f|--flavor)
         flavor=$2
         ;;
-      -i|--incremental)
-        incremental=$2
+      -l|--lemma_sharing)
+        lemma_sharing=$2
         ;;
       -m|--produce-models)
         produce_models=$2
@@ -77,10 +77,11 @@ if [ ! -f $smtServer ]; then
     exit 1
 fi
 
-if [[ ${incremental} == true ]]; then
-    incr_str="incremental"
+if [[ ${lemma_sharing} == true ]]; then
+    lemma='-l'
+    lemma_sharing_str="lemma_sharing"
 else
-    incr_str="non-incremental"
+    lemma_sharing_str="non-lemma_sharing"
 fi
 
 if [ ${benchmarks} == QF_UF ]; then
@@ -115,8 +116,8 @@ echo "Benchmark set (total ${n_benchmarks}):"
 echo " - ${bmpath}"
 
 
-echo "Incremental Solving:"
-echo " - ${incremental}"
+echo "Lemma Sharing:"
+echo " - ${lemma_sharing}"
 
 if [[ ${produce_models} == true ]]; then
     mv_str="-mv"
@@ -128,8 +129,8 @@ fi
 echo "Produce models:"
 echo " - ${produce_models}"
 
-scriptdir=smts-${flavor}-scripts-$(date +'%F')-${incr_str}-${benchmarks}${mv_str}
-resultdir=smts-${flavor}-results-$(date +'%F')-${incr_str}-${benchmarks}${mv_str}
+scriptdir=smts-${flavor}-scripts-$(date +'%F')-${lemma_sharing_str}-${benchmarks}${mv_str}
+resultdir=smts-${flavor}-results-$(date +'%F')-${lemma_sharing_str}-${benchmarks}${mv_str}
 
 echo "Work directories:"
 echo " - ${scriptdir}"
@@ -147,7 +148,7 @@ fi
 
 mkdir -p ${scriptdir}
 mkdir -p ${resultdir}
-${WORKSCRIPT} ${smtServer} ${scriptdir} ${resultdir} ${config} ${bmpath}/*.smt2.bz2
+${WORKSCRIPT} ${smtServer} ${lemma} ${scriptdir} ${resultdir} ${config} ${bmpath}/*.smt2.bz2
 
 for script in ${scriptdir}/*.sh; do
     echo ${script};
