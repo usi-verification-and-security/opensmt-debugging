@@ -2,12 +2,17 @@
 
 
 if [[ $# -lt 5 ]]; then
-    echo "Usage: $0 <smts> <script-dir> <output-dir> <config> <example1> [<example2> [ ... ] ]";
+    echo "Usage: $0 <smts> <lemma_sharing> <script-dir> <output-dir> <config> <example1> [<example2> [ ... ] ]";
     exit 1;
 fi
 
 smts_server=$1; shift
 lemma_sharing=$1; shift
+if [[ ${lemma_sharing} == true ]]; then
+    lemma='-l'
+else
+    lemma=''
+fi
 script_dir=$1; shift
 #work under linux
 out_dir=`readlink -e $1`; shift
@@ -22,9 +27,6 @@ counter=0
 # How many SMTS to run in the node (three smts_server on different ports, each 3 solver and one lemmas server)
 # Total process = 3 smts_server + 9 solver_client + 3 lemma_server
 n_smts=3
-
-# SMTS Timeout
-timeout=1000
 
 # Starting port
 port=3000
@@ -62,7 +64,7 @@ __EOF__
   echo $ex;
   inp=/tmp/\$(basename \${script})-`basename $ex .bz2`;
   bunzip2 -c $ex > \${inp};
-  sh -c "/usr/bin/time -o \${smts_time}.${i}.time -f 'user: %U system: %S wall: %e CPU: %PCPU' python3 \$script $lemma_sharing -o3 -p $((port+i)) -fp \$inp" || true; rm \${inp};
+  sh -c "/usr/bin/time -o \${smts_time}.${i}.time -f 'user: %U system: %S wall: %e CPU: %PCPU' python3 \$script $lemma -o3 -p $((port+i)) -fp \$inp" || true; rm \${inp};
  ) > \$output.${i}.out 2> \$output.${i}.err;
  out_path=\$output.${i}
  grep '^;' \$out_path.out > /dev/null && (cat \$out_path.out >> \$out_path.err; echo $ex'\n'error  > \$out_path.out) &

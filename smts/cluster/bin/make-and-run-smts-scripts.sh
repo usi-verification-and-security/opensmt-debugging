@@ -78,7 +78,6 @@ if [ ! -f $smtServer ]; then
 fi
 
 if [[ ${lemma_sharing} == true ]]; then
-    lemma='-l'
     lemma_sharing_str="lemma_sharing"
 else
     lemma_sharing_str="non-lemma_sharing"
@@ -148,7 +147,7 @@ fi
 
 mkdir -p ${scriptdir}
 mkdir -p ${resultdir}
-${WORKSCRIPT} ${smtServer} ${lemma} ${scriptdir} ${resultdir} ${config} ${bmpath}/*.smt2.bz2
+${WORKSCRIPT} ${smtServer} ${lemma_sharing} ${scriptdir} ${resultdir} ${config} ${bmpath}/*.smt2.bz2
 
 for script in ${scriptdir}/*.sh; do
     echo ${script};
