@@ -7,6 +7,7 @@ if [[ $# -lt 5 ]]; then
 fi
 
 smts_server=$1; shift
+lemma_sharing=$1; shift
 script_dir=$1; shift
 #work under linux
 out_dir=`readlink -e $1`; shift
@@ -27,7 +28,6 @@ timeout=1000
 
 # Starting port
 port=3000
-
 while [[ $# > 0 ]]; do
     ex=$1;
     bname=`basename $ex`
@@ -62,7 +62,7 @@ __EOF__
   echo $ex;
   inp=/tmp/\$(basename \${script})-`basename $ex .bz2`;
   bunzip2 -c $ex > \${inp};
-  sh -c "/usr/bin/time -o \${smts_time}.${i}.time -f 'user: %U system: %S wall: %e CPU: %PCPU' python3 \$script -o3 -l -p $((port+i)) -fp \$inp" || true; rm \${inp};
+  sh -c "/usr/bin/time -o \${smts_time}.${i}.time -f 'user: %U system: %S wall: %e CPU: %PCPU' python3 \$script $lemma_sharing -o3 -p $((port+i)) -fp \$inp" || true; rm \${inp};
  ) > \$output.${i}.out 2> \$output.${i}.err;
  out_path=\$output.${i}
  grep '^;' \$out_path.out > /dev/null && (cat \$out_path.out >> \$out_path.err; echo $ex'\n'error  > \$out_path.out) &
