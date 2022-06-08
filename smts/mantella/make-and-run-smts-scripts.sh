@@ -11,7 +11,7 @@ DEFAULTSMTS=${DEFAULTSMTS:-/home/masoud/dev/SMTS/server/smts.py}
 DEFAULTCONFIG=empty.smt2
 WORKSCRIPT=${SCRIPT_ROOT}/make_scripts_smts.sh
 
-usage="Usage: $0 [-h] [-s <smts-server>] [-c <config>] -b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL> [-f <flavor>] [-i true | false]"
+usage="Usage: $0 [-h] [-s <smts-server>] [-c <config>] -b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL|...> [-f <flavor>] [-i true | false]"
 
 incremental=false;
 
@@ -96,8 +96,12 @@ elif [ ${benchmarks} == QF_UFLIA ]; then
 elif [ ${benchmarks} == QF_UFLRA ]; then
     bmpath=${BMBASE}/QF_UFLRA;
 else
-    echo "Unknown benchmark ${benchmarks}"
-    exit 1
+    bmpath=${BMBASE}/${benchmarks}
+    if [[ ! -d $bmpath ]]
+      then
+        echo "$bmpath does not exists!"
+        exit 1
+    fi
 fi
 n_benchmarks=$(ls ${bmpath}/*.smt2.bz2 |wc -l)
 
