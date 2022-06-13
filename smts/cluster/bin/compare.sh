@@ -51,8 +51,7 @@ if [ ${x_div} != ${y_div} ]; then
 fi
 
 if [ ${x_track} != ${y_track} ]; then
-    echo "Tracks differ: ${x_track} != ${y_track}"
-    exit 1;
+    echo "Comparing tracks are: ${x_track} != ${y_track}"
 fi
 
 echo "Extracting "
