@@ -11,8 +11,9 @@ DEFAULTSMTS=${DEFAULTSMTS:-/home/masoud/SMTS/server/smts.py}
 DEFAULTCONFIG=empty.smt2
 WORKSCRIPT=${SCRIPT_ROOT}/make_scripts_smts.sh
 
-usage="Usage: $0 [-h] [-s <smts-server>] [-l <lemma_sharing> true | false] [-c <config>] [-b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL>] [-f <flavor>] [-m true | false]"
+usage="Usage: $0 [-h] [-s <smts-server>] [-l <lemma_sharing> true | false] [-p <partitioning> true | false] [-c <config>] [-b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL>] [-f <flavor>] [-m true | false]"
 
+partitioning=true
 lemma_sharing=true;
 produce_models=false;
 
@@ -33,6 +34,9 @@ while [ $# -gt 0 ]; do
         ;;
       -f|--flavor)
         flavor=$2
+        ;;
+      -p|--partitioning)
+        partitioning=$2
         ;;
       -l|--lemma_sharing)
         lemma_sharing=$2
@@ -83,6 +87,12 @@ else
     lemma_sharing_str="non-lemma_sharing"
 fi
 
+if [[ ${partitioning} == true ]]; then
+    partitioning_str="partitioning"
+else
+    partitioning_str="non-partitioning"
+fi
+
 if [ ${benchmarks} == QF_UF ]; then
     bmpath=${BMBASE}/QF_UF;
 elif [ ${benchmarks} == QF_LRA ]; then
@@ -118,6 +128,9 @@ echo " - ${bmpath}"
 echo "Lemma Sharing:"
 echo " - ${lemma_sharing}"
 
+echo "Partitioning:"
+echo " - ${partitioning}"
+
 if [[ ${produce_models} == true ]]; then
     mv_str="-mv"
     WORKSCRIPT=${SCRIPT_ROOT}/make_scripts_smts_models.sh
@@ -128,8 +141,8 @@ fi
 echo "Produce models:"
 echo " - ${produce_models}"
 
-scriptdir=smts-${flavor}-scripts-$(date +'%F')-${lemma_sharing_str}-${benchmarks}${mv_str}
-resultdir=smts-${flavor}-results-$(date +'%F')-${lemma_sharing_str}-${benchmarks}${mv_str}
+scriptdir=smts-${flavor}-scripts-$(date +'%F')-${lemma_sharing_str}${partitioning_str}-${benchmarks}${mv_str}
+resultdir=smts-${flavor}-results-$(date +'%F')-${lemma_sharing_str}${partitioning_str}-${benchmarks}${mv_str}
 
 echo "Work directories:"
 echo " - ${scriptdir}"
@@ -147,7 +160,7 @@ fi
 
 mkdir -p ${scriptdir}
 mkdir -p ${resultdir}
-${WORKSCRIPT} ${smtServer} ${lemma_sharing} ${scriptdir} ${resultdir} ${config} ${bmpath}/*.smt2.bz2
+${WORKSCRIPT} ${smtServer} ${lemma_sharing} ${partitioning} ${scriptdir} ${resultdir} ${config} ${bmpath}/*.smt2.bz2
 
 for script in ${scriptdir}/*.sh; do
     echo ${script};
