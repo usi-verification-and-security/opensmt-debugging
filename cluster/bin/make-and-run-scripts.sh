@@ -6,7 +6,7 @@ function get_abs_path {
 
 SCRIPT_ROOT=$(get_abs_path $(dirname $0))
 
-BMBASE=${BMBASE:-~/benchmarks/}
+BMBASE=${BMBASE:-/home/hyvaerinen/benchmarks}
 DEFAULTOSMT=${DEFAULTOSMT:-~/bin/opensmt}
 DEFAULTCONFIG=empty.smt2
 WORKSCRIPT=${SCRIPT_ROOT}/make_scripts_osmt2.sh
