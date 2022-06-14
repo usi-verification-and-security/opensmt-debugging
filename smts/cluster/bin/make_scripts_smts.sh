@@ -2,7 +2,7 @@
 
 
 if [[ $# -lt 5 ]]; then
-    echo "Usage: $0 <smts> <lemma_sharing> <script-dir> <output-dir> <config> <example1> [<example2> [ ... ] ]";
+    echo "Usage: $0 <smts> <lemma_sharing> <partitioning> <script-dir> <output-dir> <config> <example1> [<example2> [ ... ] ]";
     exit 1;
 fi
 
@@ -13,6 +13,14 @@ if [[ ${lemma_sharing} == true ]]; then
 else
     lemma=''
 fi
+
+partitioning=$1; shift
+if [[ ${partitioning} == true ]]; then
+    partition='-p'
+else
+    partition=''
+fi
+
 script_dir=$1; shift
 #work under linux
 out_dir=`readlink -e $1`; shift
@@ -62,7 +70,9 @@ __EOF__
         cat << __EOF__ >> $script_dir/$script_name
  (
   echo $ex;
-  sh -c "/usr/bin/time -o \${smts_time}.${i}.time -f 'user: %U system: %S wall: %e CPU: %PCPU' python3 \$script $lemma $partition -o3 -pn $((port+i)) -fp \$ex";
+  inp=/tmp/\$(basename \${script})-`basename $ex .bz2`;
+  bunzip2 -c $ex > \${inp};
+  sh -c "/usr/bin/time -o \${smts_time}.${i}.time -f 'user: %U system: %S wall: %e CPU: %PCPU' python3 \$script $lemma $partition -o3 -pn $((port+i)) -fp \$inp" || true; rm \${inp};
  ) > \$output.${i}.out 2> \$output.${i}.err;
  out_path=\$output.${i}
  grep '^;' \$out_path.out > /dev/null && (cat \$out_path.out >> \$out_path.err; echo $ex'\n'error  > \$out_path.out) &
