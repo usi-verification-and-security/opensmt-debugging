@@ -11,7 +11,7 @@ DEFAULTSMTS=${DEFAULTSMTS:-/home/masoud/SMTS/server/smts.py}
 DEFAULTCONFIG=empty.smt2
 WORKSCRIPT=${SCRIPT_ROOT}/make_scripts_smts.sh
 
-usage="Usage: $0 [-h] [-s <smts-server>] [-l <lemma_sharing> true | false] [-p <partitioning> true | false] [-c <config>] [-b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL>] [-f <flavor>] [-m true | false]"
+usage="Usage: $0 [-h] [-s <smts-server>] [-l <lemma_sharing> true | false] [-p <partitioning> true | false] [-c <config>] [-b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL>] [-f <flavor>] [-m true | false] [-fp <selected instances>]"
 
 partitioning=true
 lemma_sharing=true;
@@ -40,6 +40,9 @@ while [ $# -gt 0 ]; do
         ;;
       -l|--lemma_sharing)
         lemma_sharing=$2
+        ;;
+      -fp|--file_path)
+        file_path=$2
         ;;
       -m|--produce-models)
         produce_models=$2
@@ -113,7 +116,23 @@ else
     echo "Unknown benchmark ${benchmarks}"
     exit 1
 fi
-n_benchmarks=$(ls ${bmpath}/*.smt2.bz2 |wc -l)
+
+n_benchmarks=0
+if [ -z ${file_path} ]; then
+    bmset=${bmpath}/*.smt2.bz2
+    n_benchmarks=$(ls ${bmset} |wc -l)
+else
+    chmod +r ${file_path}
+    while IFS= read -r line;
+    do
+      bmset+=${bmpath}/$line' ';
+      ((n_benchmarks=n_benchmarks+1))
+    done < ${file_path}
+fi
+
+
+
+echo $bmset
 
 echo "SMTSServer:"
 echo " - ${smtServer}"
@@ -123,7 +142,6 @@ echo "Modification date:"
 echo " - $(date -r ${smtServer})"
 echo "Benchmark set (total ${n_benchmarks}):"
 echo " - ${bmpath}"
-
 
 echo "Lemma Sharing:"
 echo " - ${lemma_sharing}"
@@ -160,7 +178,7 @@ fi
 
 mkdir -p ${scriptdir}
 mkdir -p ${resultdir}
-${WORKSCRIPT} ${smtServer} ${lemma_sharing} ${partitioning} ${scriptdir} ${resultdir} ${config} ${bmpath}/*.smt2.bz2
+${WORKSCRIPT} ${smtServer} ${lemma_sharing} ${partitioning} ${scriptdir} ${resultdir} ${config} ${bmset}
 
 for script in ${scriptdir}/*.sh; do
     echo ${script};
