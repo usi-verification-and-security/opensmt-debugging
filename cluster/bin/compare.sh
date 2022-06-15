@@ -21,8 +21,9 @@ fi
 xd=$1
 yd=$2
 
+# osmt2-22306e2e-results-2022-06-15-non-incremental-QF_LIA_Averest_parallel_prefix_sum
 # osmt2-master-results-2020-09-17-non-incremental-QF_UF
-regex='osmt2-\(.*\)-results-\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\)-\(.*\)-\([A-Z_]*\)'
+regex='osmt2-\(.*\)-results-\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\)-\(.*\)-\([A-Z_]*\)_\(.*\)'
 
 x_branch=$(echo ${xd} |sed s/${regex}/\\1/g)
 y_branch=$(echo ${yd} |sed s/${regex}/\\1/g)
@@ -36,8 +37,17 @@ y_track=$(echo ${yd} |sed s/${regex}/\\3/g)
 x_div=$(echo ${xd} |sed s/${regex}/\\4/g)
 y_div=$(echo ${yd} |sed s/${regex}/\\4/g)
 
+x_subdiv=$(echo ${xd} |sed s/${regex}/\\5/g)
+y_subdiv=$(echo ${yd} |sed s/${regex}/\\5/g)
+
+
 if [ ${x_div} != ${y_div} ]; then
     echo "Division differ: ${x_div} != ${y_div}"
+    exit 1;
+fi
+
+if [ ${x_subdiv} != ${y_subdiv} ]; then
+    echo "Subdivision differ: ${x_subdiv} != ${y_subdiv}"
     exit 1;
 fi
 
@@ -52,7 +62,7 @@ echo "Extracting "
 echo "done."
 
 
-name=figures/${x_track}-${x_div}-${x_branch}-${x_date}_vs_${y_branch}-${y_date}
+name=figures/${x_track}-${x_div}-${x_subdiv}-${x_branch}-${x_date}_vs_${y_branch}-${y_date}
 
 mkdir -p figures
 
@@ -60,6 +70,8 @@ echo "Plotting "
 ${GNUPLOTTOR} ${xd}.list ${yd}.list \
     "${x_branch} ${x_date}"\
     "${y_branch} ${y_date}" \
+    "${x_div}" \
+    "${x_subdiv}" \
     ${name}.png > \
     ${name}.gp
 echo "done."

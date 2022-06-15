@@ -7,7 +7,7 @@ to = 1200
 
 usage = """
 %s -- create scatter plot gnuplot scripts using tex driver
-Usage: %s <x-res> <y-res> <x-label> <y-label> <output>
+Usage: %s <x-res> <y-res> <x-label> <y-label> <div> <subdiv> <output>
 <x-res> and <y-res> are the result files for horizontal
 and vertical axis.  The results files should consist of
 lines of the form
@@ -23,11 +23,14 @@ script assumes %d seconds time out
 """
 
 if __name__ == '__main__':
-    if len(sys.argv) != 6:
+    if len(sys.argv) != 8:
         print(usage % (sys.argv[0], sys.argv[0], to))
         sys.exit(1)
 
-    output = sys.argv[5]
+    output = sys.argv[7]
+
+    division = sys.argv[5].replace("_", "\\\\_")
+    subdivision = sys.argv[6].replace("_", "\\\\_")
 
     x_l = open(sys.argv[1], 'r').readlines()
     y_l = open(sys.argv[2], 'r').readlines()
@@ -133,6 +136,7 @@ if __name__ == '__main__':
     print('set output "%s"' % output)
     print('set size square')
     print('set size 0.8, 0.8')
+    print('set title "%s %s"' % (division, subdivision))
     print('set xlabel "%s"' % sys.argv[3])
     print('set ylabel "%s"' % sys.argv[4])
     if (use_log):

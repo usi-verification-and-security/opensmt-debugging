@@ -6,12 +6,12 @@ function get_abs_path {
 
 SCRIPT_ROOT=$(get_abs_path $(dirname $0))
 
-BMBASE=${BMBASE:-/home/hyvaerinen/benchmarks}
+BMBASE=${BMBASE:-~/benchmarks-updated}
 DEFAULTOSMT=${DEFAULTOSMT:-~/bin/opensmt}
 DEFAULTCONFIG=empty.smt2
 WORKSCRIPT=${SCRIPT_ROOT}/make_scripts_osmt2.sh
 
-usage="Usage: $0 [-h] [-o <osmt2-binary>] [-c <config>] -b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL|QF_UFLRA|QF_UFLIA> [-f <flavor>] [-i true | false] [-m true | false]"
+usage="Usage: $0 [-h] [-o <osmt2-binary>] [-c <config>] -b <benchmark-path> [-f <flavor>] [-i true | false] [-m true | false]"
 
 incremental=false;
 produce_models=false;
@@ -84,32 +84,14 @@ fi
 
 if [[ ${incremental} == true ]]; then
     incr_str="incremental"
-    BMBASE=~/benchmarks-incremental
+    BMBASE=$BMBASE-incremental
 else
     incr_str="non-incremental"
 fi
 
-if [ ${benchmarks} == QF_UF ]; then
-    bmpath=${BMBASE}/QF_UF;
-elif [ ${benchmarks} == QF_LRA ]; then
-    bmpath=${BMBASE}/QF_LRA;
-elif [ ${benchmarks} == newQF_LRA ]; then
-    bmpath=${BMBASE}/newQF_LRA;
-elif [ ${benchmarks} == QF_LIA ]; then
-    bmpath=${BMBASE}/QF_LIA;
-elif [ ${benchmarks} == QF_RDL ]; then
-    bmpath=${BMBASE}/QF_RDL;
-elif [ ${benchmarks} == QF_IDL ]; then
-    bmpath=${BMBASE}/QF_IDL;
-elif [ ${benchmarks} == QF_UFLRA ]; then
-    bmpath=${BMBASE}/QF_UFLRA;
-elif [ ${benchmarks} == QF_UFLIA ]; then
-    bmpath=${BMBASE}/QF_UFLIA;
-else
-    echo "Unknown benchmark ${benchmarks}"
-    exit 1
-fi
-n_benchmarks=$(ls ${bmpath}/*.smt2.bz2 |wc -l)
+bmpath=${BMBASE}/${benchmarks};
+
+n_benchmarks=$(find ${bmpath} -name '*.smt2.bz2' |wc -l)
 
 echo "Binary:"
 echo " - ${binary}"
@@ -134,8 +116,10 @@ fi
 echo "Produce models:"
 echo " - ${produce_models}"
 
-scriptdir=osmt2-${flavor}-scripts-$(date +'%F')-${incr_str}-${benchmarks}${mv_str}
-resultdir=osmt2-${flavor}-results-$(date +'%F')-${incr_str}-${benchmarks}${mv_str}
+benchmarks_printable=$(echo ${benchmarks} |tr '/' '_')
+
+scriptdir=osmt2-${flavor}-scripts-$(date +'%F')-${incr_str}-${benchmarks_printable}${mv_str}
+resultdir=osmt2-${flavor}-results-$(date +'%F')-${incr_str}-${benchmarks_printable}${mv_str}
 
 echo "Work directories:"
 echo " - ${scriptdir}"
@@ -153,7 +137,7 @@ fi
 
 mkdir -p ${scriptdir}
 mkdir -p ${resultdir}
-${WORKSCRIPT} ${binary} ${scriptdir} ${resultdir} ${config} ${bmpath}/*.smt2.bz2
+${WORKSCRIPT} ${binary} ${scriptdir} ${resultdir} ${config} ${bmpath}
 
 for script in ${scriptdir}/*.sh; do
     echo ${script};
