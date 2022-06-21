@@ -54,9 +54,7 @@ __EOF__
         cat << __EOF__ >> $script_dir/$script_name
  (
   echo $ex;
-  inp=/tmp/\$(basename \${script})-`basename $ex .bz2`;
-  bunzip2 -c $ex > \${inp};
-  sh -c "/usr/bin/time -o \${smts_time}.${i}.time -f 'user: %U system: %S wall: %e CPU: %PCPU' python3 \$script -o50 $lemma -fp \$inp" || true; rm \${inp};
+  sh -c "/usr/bin/time -o \${smts_time}.${i}.time -f 'user: %U system: %S wall: %e CPU: %PCPU' python3 \$script -o50 $lemma $partition -fp \$ex";
  ) > \$output.${i}.out 2> \$output.${i}.err;
  out_path=\$output.${i}
  grep '^;' \$out_path.out > /dev/null && (cat \$out_path.out >> \$out_path.err; echo $ex'\n'error  > \$out_path.out) &
