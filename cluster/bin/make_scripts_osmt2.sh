@@ -31,7 +31,6 @@ while (( $# )); do
     scriptfile=$(printf "${scripts}/%04d.sh" ${r})
     outfilebase=$(printf "${results}/%04d" ${r})
     ex=$1;
-    bname=`basename $ex`
     echo "generating $scriptfile"
     cat << __EOF__ > $scriptfile
 #!/bin/bash
