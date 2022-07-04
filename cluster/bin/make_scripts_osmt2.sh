@@ -56,14 +56,18 @@ __EOF__
             break;
         fi
         ex=$1; shift
+        ex_id=$(echo $ex |sed 's!^'$bmpath'[/]*!!g')
+        ex_printable=$(echo $ex_id |tr '/' '_')
         cat << __EOF__ >> $scriptfile
  (
-  echo $ex;
-  inp=/tmp/\$(basename \${script})-`basename $ex .bz2`;
+  echo $ex_id;
+  TMPDIR=\$(mktemp -d)
+  trap "rm -rf \$TMPDIR" EXIT
+  inp=\$TMPDIR/\$(basename \${script})-`basename $ex_printable .bz2`;
   bunzip2 -c $ex > \${inp};
   sh -c "ulimit -St ${timeout};
   ulimit -Sv 4000000;
-  /usr/bin/time -o \${osmt_time}.${i}.time -f 'user: %U system: %S wall: %e CPU: %PCPU' \$script \$config \$inp" || true; rm \${inp};
+  /usr/bin/time -o \${osmt_time}.${i}.time -f 'user: %U system: %S wall: %e CPU: %PCPU' \$script \$config \$inp" || true;
  ) > \$output.${i}.out 2> \$output.${i}.err &
 __EOF__
     done
