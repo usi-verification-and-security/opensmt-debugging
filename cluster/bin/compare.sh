@@ -21,12 +21,17 @@ fi
 xd=$1
 yd=$2
 
-# osmt2-22306e2e-results-2022-06-15-non-incremental-QF_LIA_Averest_parallel_prefix_sum
-# osmt2-master-results-2020-09-17-non-incremental-QF_UF
-regex='osmt2-\(.*\)-results-\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\)-\(.*\)-\([A-Z_]*\)_\(.*\)'
+regex='\(.*\)-results-\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\)-\(.*\)-\([A-Z_]*\)'
 
 x_branch=$(echo ${xd} |sed s/${regex}/\\1/g)
+x_branch=(${x_branch//-/ })
+project_x=${x_branch[0]}
+x_branch=${x_branch[1]}
+
 y_branch=$(echo ${yd} |sed s/${regex}/\\1/g)
+y_branch=(${y_branch//-/ })
+project_y=${y_branch[0]}
+y_branch=${y_branch[1]}
 
 x_date=$(echo ${xd} |sed s/${regex}/\\2/g)
 y_date=$(echo ${yd} |sed s/${regex}/\\2/g)
@@ -57,8 +62,8 @@ if [ ${x_track} != ${y_track} ]; then
 fi
 
 echo "Extracting "
-[[ ${xd}.list -nt ${xd} ]] || ${EXTRACTOR} ${xd} > ${xd}.list
-[[ ${yd}.list -nt {$yd} ]] || ${EXTRACTOR} ${yd} > ${yd}.list
+[[ ${xd}.list -nt ${xd} ]] || ${EXTRACTOR} ${xd} osmt2 > ${xd}.list
+[[ ${yd}.list -nt $$yd} ]] || ${EXTRACTOR} ${yd} osmt2 > ${yd}.list
 echo "done."
 
 

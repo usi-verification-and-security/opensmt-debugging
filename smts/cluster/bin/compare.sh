@@ -22,7 +22,6 @@ fi
 xd=$1
 yd=$2
 
-
 regex='\(.*\)-results-\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\)-\(.*\)-\([A-Z_]*\)'
 
 x_branch=$(echo ${xd} |sed s/${regex}/\\1/g)
@@ -51,7 +50,8 @@ if [ ${x_div} != ${y_div} ]; then
 fi
 
 if [ ${x_track} != ${y_track} ]; then
-    echo "Comparing tracks are: ${x_track} != ${y_track}"
+    echo "Tracks differ: ${x_track} != ${y_track}"
+    exit 1;
 fi
 
 echo "Extracting "

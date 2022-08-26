@@ -43,12 +43,12 @@ while (( $# )); do
 #SBATCH --output=$outfilebase.out
 #SBATCH --error=$outfilebase.err
 
-osmt_time=$outfilebase.osmt
+osmt_time=$outfilebase
 output=$outfilebase
 
 config=${config}
 script=${osmt}
-#script=/home/hyvaeria/bin/run-dumper.sh
+
 __EOF__
 
     for ((i=0; i < $ncpus; i++)); do

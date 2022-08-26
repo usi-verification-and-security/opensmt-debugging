@@ -6,12 +6,12 @@ function get_abs_path {
 
 SCRIPT_ROOT=$(get_abs_path $(dirname $0))
 
-BMBASE=${BMBASE:-/home/hyvaerinen/benchmarks}
+BMBASE=${BMBASE:-/home/hyvaerinen/benchmarks-updated}
 DEFAULTSMTS=${DEFAULTSMTS:-/home/masoud/SMTS/server/smts.py}
 DEFAULTCONFIG=empty.smt2
 WORKSCRIPT=${SCRIPT_ROOT}/make_scripts_smts.sh
 
-usage="Usage: $0 [-h] [-s <smts-server>] [-l <lemma_sharing> true | false] [-p <partitioning> true | false] [-c <config>] [-b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL>] [-f <flavor>] [-m true | false]"
+usage="Usage: $0 [-h] [-s <smts-server>] [-l <lemma_sharing> true | false] [-p <partitioning> true | false] [-c <config>] -b <benchmark path> [-f <flavor>] [-m true | false]"
 
 partitioning=true
 lemma_sharing=true;
@@ -93,27 +93,9 @@ else
     partitioning_str="non-partitioning"
 fi
 
-if [ ${benchmarks} == QF_UF ]; then
-    bmpath=${BMBASE}/QF_UF;
-elif [ ${benchmarks} == QF_LRA ]; then
-    bmpath=${BMBASE}/QF_LRA;
-elif [ ${benchmarks} == newQF_LRA ]; then
-    bmpath=${BMBASE}/newQF_LRA;
-elif [ ${benchmarks} == QF_LIA ]; then
-    bmpath=${BMBASE}/QF_LIA;
-elif [ ${benchmarks} == QF_RDL ]; then
-    bmpath=${BMBASE}/QF_RDL;
-elif [ ${benchmarks} == QF_IDL ]; then
-    bmpath=${BMBASE}/QF_IDL;
-elif [ ${benchmarks} == QF_UFLIA ]; then
-    bmpath=${BMBASE}/QF_UFLIA;
-elif [ ${benchmarks} == QF_UFLRA ]; then
-    bmpath=${BMBASE}/QF_UFLRA;
-else
-    echo "Unknown benchmark ${benchmarks}"
-    exit 1
-fi
-n_benchmarks=$(ls ${bmpath}/*.smt2.bz2 |wc -l)
+bmpath=${BMBASE}/${benchmarks};
+
+n_benchmarks=$(find ${bmpath} -name '*.smt2.bz2' |wc -l)
 
 echo "SMTSServer:"
 echo " - ${smtServer}"
@@ -141,8 +123,10 @@ fi
 echo "Produce models:"
 echo " - ${produce_models}"
 
-scriptdir=smts-${flavor}-scripts-$(date +'%F')-${lemma_sharing_str}${partitioning_str}-${benchmarks}${mv_str}
-resultdir=smts-${flavor}-results-$(date +'%F')-${lemma_sharing_str}${partitioning_str}-${benchmarks}${mv_str}
+benchmarks_printable=$(echo ${benchmarks} |tr '/' '_')
+
+scriptdir=smts${lemma_sharing_str}${partitioning_str}-${flavor}-scripts-$(date +'%F')-non-incremental-${benchmarks}${mv_str}
+resultdir=smts${lemma_sharing_str}${partitioning_str}-${flavor}-results-$(date +'%F')-non-incremental-${benchmarks}${mv_str}
 
 echo "Work directories:"
 echo " - ${scriptdir}"
@@ -160,7 +144,7 @@ fi
 
 mkdir -p ${scriptdir}
 mkdir -p ${resultdir}
-${WORKSCRIPT} ${smtServer} ${lemma_sharing} ${partitioning} ${scriptdir} ${resultdir} ${config} ${bmpath}/*.smt2.bz2
+${WORKSCRIPT} ${smtServer} ${lemma_sharing} ${partitioning} ${scriptdir} ${resultdir} ${config} ${bmpath}
 
 for script in ${scriptdir}/*.sh; do
     echo ${script};
