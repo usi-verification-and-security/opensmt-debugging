@@ -21,7 +21,7 @@ fi
 xd=$1
 yd=$2
 
-regex='\(.*\)-results-\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\)-\(.*\)-\([A-Z_]*\)'
+regex='\(.*\)-results-\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\)-\(.*\)-\([A-Z_]*\)\(_.*\)\?'
 
 x_branch=$(echo ${xd} |sed s/${regex}/\\1/g)
 x_branch=(${x_branch//-/ })
@@ -51,8 +51,8 @@ if [ ${x_div} != ${y_div} ]; then
     exit 1;
 fi
 
-if [ ${x_subdiv} != ${y_subdiv} ]; then
-    echo "Subdivision differ: ${x_subdiv} != ${y_subdiv}"
+if [ x"${x_subdiv}" != x"${y_subdiv}" ]; then
+    echo "Subdivision differ: '${x_subdiv}' != '${y_subdiv}'"
     exit 1;
 fi
 
@@ -63,11 +63,11 @@ fi
 
 echo "Extracting "
 [[ ${xd}.list -nt ${xd} ]] || ${EXTRACTOR} ${xd} osmt2 > ${xd}.list
-[[ ${yd}.list -nt $$yd} ]] || ${EXTRACTOR} ${yd} osmt2 > ${yd}.list
+[[ ${yd}.list -nt ${yd} ]] || ${EXTRACTOR} ${yd} osmt2 > ${yd}.list
 echo "done."
 
 
-name=figures/${x_track}-${x_div}-${x_subdiv}-${x_branch}-${x_date}_vs_${y_branch}-${y_date}
+name=figures/${x_track}-${x_div}${x_subdiv}-${x_branch}-${x_date}_vs_${y_branch}-${y_date}
 
 mkdir -p figures
 
