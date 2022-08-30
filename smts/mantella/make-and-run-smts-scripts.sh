@@ -6,15 +6,15 @@ function get_abs_path {
 
 SCRIPT_ROOT=$(get_abs_path $(dirname $0))
 
-BMBASE=${BMBASE:-/home/hyvaerinen/benchmarks}
-DEFAULTOSMT=${DEFAULTOSMT:-~/bin/opensmt}
+BMBASE=${BMBASE:-/home/masoud/dev/benchmarks}
+DEFAULTSMTS=${DEFAULTSMTS:-/home/masoud/dev/SMTS/server/smts.py}
 DEFAULTCONFIG=empty.smt2
-WORKSCRIPT=${SCRIPT_ROOT}/make_scripts_osmt2.sh
+WORKSCRIPT=${SCRIPT_ROOT}/make_scripts_smts.sh
 
-usage="Usage: $0 [-h] [-o <osmt2-binary>] [-c <config>] -b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL|QF_UFLRA|QF_UFLIA> [-f <flavor>] [-i true | false] [-m true | false]"
+usage="Usage: $0 [-h] [-s <smts-server>] [-l <lemma_sharing> true | false] [-p <partitioning> true | false]  [-c <config>] [-b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL>] [-f <flavor>] [-m true | false]"
 
-incremental=false;
-produce_models=false;
+partitioning=true
+lemma_sharing=true;
 
 while [ $# -gt 0 ]; do
     case $1 in
@@ -22,8 +22,8 @@ while [ $# -gt 0 ]; do
         echo "${usage}"
         exit 1
         ;;
-      -o|--osmt-binary)
-        binary="$2"
+      -s|--smts-server)
+        smtServer=$2
         ;;
       -c|--config)
         config=$2
@@ -34,11 +34,11 @@ while [ $# -gt 0 ]; do
       -f|--flavor)
         flavor=$2
         ;;
-      -i|--incremental)
-        incremental=$2
+      -p|--partitioning)
+        partitioning=$2
         ;;
-      -m|--produce-models)
-        produce_models=$2
+      -l|--lemma_sharing)
+        lemma_sharing=$2
         ;;
       -*)
         echo "Error: invalid option '$1'"
@@ -50,8 +50,8 @@ while [ $# -gt 0 ]; do
     shift; shift
 done
 
-if [ -z ${binary} ]; then
-    binary=${DEFAULTOSMT}
+if [ -z ${smtServer} ]; then
+    smtServer=${DEFAULTSMTS}
 fi
 
 if [ -z ${config} ]; then
@@ -59,7 +59,7 @@ if [ -z ${config} ]; then
 fi
 
 if [ -z ${flavor} ]; then
-    flavor=$(basename $binary | sed 's/opensmt//g')
+    flavor=$(basename $smtServer | sed 's/smts//g')
     if [ -z ${flavor} ]; then
         flavor=master
     else
@@ -72,21 +72,21 @@ if [ -z ${benchmarks} ]; then
     exit 1;
 fi
 
-if [ ! -f $binary ]; then
-    echo "Binary $binary not found"
+if [ ! -f $smtServer ]; then
+    echo "SMTS Server $smtServer not found"
     exit 1
 fi
 
-if [ ! -f $config ]; then
-    echo "Config $config not found"
-    exit 1
-fi
-
-if [[ ${incremental} == true ]]; then
-    incr_str="incremental"
-    BMBASE=~/benchmarks-incremental
+if [[ ${lemma_sharing} == true ]]; then
+    lemma_sharing_str="lemma_sharing"
 else
-    incr_str="non-incremental"
+    lemma_sharing_str="non-lemma_sharing"
+fi
+
+if [[ ${partitioning} == true ]]; then
+    partitioning_str="partitioning"
+else
+    partitioning_str="non-partitioning"
 fi
 
 if [ ${benchmarks} == QF_UF ]; then
@@ -105,41 +105,33 @@ elif [ ${benchmarks} == QF_UFLIA ]; then
     bmpath=${BMBASE}/QF_UFLIA;
 elif [ ${benchmarks} == QF_UFLRA ]; then
     bmpath=${BMBASE}/QF_UFLRA;
-elif [ ${benchmarks} == smtlib_benchmarks ]; then
-    bmpath=${BMBASE}/smtlib_benchmarks;
-elif [ ${benchmarks} == interesting ]; then
-    bmpath=${BMBASE}/interesting;
 else
-    echo "Unknown benchmark ${benchmarks}"
-    exit 1
+    bmpath=${BMBASE}/${benchmarks}
+    if [[ ! -d $bmpath ]]
+      then
+        echo "$bmpath does not exists!"
+        exit 1
+    fi
 fi
 n_benchmarks=$(ls ${bmpath}/*.smt2.bz2 |wc -l)
 
-echo "Binary:"
-echo " - ${binary}"
+echo "SMTSServer:"
+echo " - ${smtServer}"
 echo "Flavor:"
 echo " - ${flavor}"
 echo "Modification date:"
-echo " - $(date -r ${binary})"
+echo " - $(date -r ${smtServer})"
 echo "Benchmark set (total ${n_benchmarks}):"
 echo " - ${bmpath}"
 
+echo "Lemma Sharing:"
+echo " - ${lemma_sharing}"
 
-echo "Incremental benchmarks:"
-echo " - ${incremental}"
+echo "Partitioning:"
+echo " - ${partitioning}"
 
-if [[ ${produce_models} == true ]]; then
-    mv_str="-mv"
-    WORKSCRIPT=${SCRIPT_ROOT}/make_scripts_osmt2_models.sh
-else
-    mv_str=""
-fi
-
-echo "Produce models:"
-echo " - ${produce_models}"
-
-scriptdir=osmt2-${flavor}-scripts-$(date +'%F')-${incr_str}-${benchmarks}${mv_str}
-resultdir=osmt2-${flavor}-results-$(date +'%F')-${incr_str}-${benchmarks}${mv_str}
+scriptdir=smts-${flavor}-scripts-$(date +'%F')-${lemma_sharing_str}${partitioning_str}-${benchmarks}
+resultdir=smts-${flavor}-results-$(date +'%F')-${lemma_sharing_str}${partitioning_str}-${benchmarks}
 
 echo "Work directories:"
 echo " - ${scriptdir}"
@@ -147,7 +139,7 @@ echo " - ${resultdir}"
 
 echo
 
-echo "Construct and send the above jobs to batch queue?"
+echo "Construct and run the above jobs one by one?"
 read -p "y/N? "
 
 if [[ ${REPLY} != y ]]; then
@@ -157,11 +149,11 @@ fi
 
 mkdir -p ${scriptdir}
 mkdir -p ${resultdir}
-${WORKSCRIPT} ${binary} ${scriptdir} ${resultdir} ${config} ${bmpath}/*.smt2.bz2
+${WORKSCRIPT} ${smtServer} ${lemma_sharing} ${partitioning} ${scriptdir} ${resultdir} ${config} ${bmpath}/*.smt2.bz2
 
 for script in ${scriptdir}/*.sh; do
     echo ${script};
-    sbatch ${script};
+    sh ${script};
     sleep 1;
 done
 
