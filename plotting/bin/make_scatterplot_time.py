@@ -3,7 +3,7 @@
 import sys
 
 # Change the timeout here if needed
-to = 1200
+to = 1200000
 
 usage = """
 %s -- create scatter plot gnuplot scripts using tex driver

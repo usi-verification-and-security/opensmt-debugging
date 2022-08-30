@@ -1,0 +1,6 @@
+(set-option :pure-lookahead true)
+(set-option :verbosity 1)
+(set-option :proof-reduce 1)
+(set-option :simplify-interpolants 4)
+(set-option :randomize-lookahead true)
+(set-option :randomize-lookahead-buf 10)

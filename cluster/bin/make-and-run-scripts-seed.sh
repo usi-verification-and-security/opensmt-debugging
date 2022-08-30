@@ -23,7 +23,7 @@ while [ $# -gt 0 ]; do
         exit 1
         ;;
       -o|--osmt-binary)
-        binary="$2"
+        binary=$2
         ;;
       -c|--config)
         config=$2
@@ -101,10 +101,6 @@ elif [ ${benchmarks} == QF_RDL ]; then
     bmpath=${BMBASE}/QF_RDL;
 elif [ ${benchmarks} == QF_IDL ]; then
     bmpath=${BMBASE}/QF_IDL;
-elif [ ${benchmarks} == QF_UFLIA ]; then
-    bmpath=${BMBASE}/QF_UFLIA;
-elif [ ${benchmarks} == QF_UFLRA ]; then
-    bmpath=${BMBASE}/QF_UFLRA;
 elif [ ${benchmarks} == smtlib_benchmarks ]; then
     bmpath=${BMBASE}/smtlib_benchmarks;
 elif [ ${benchmarks} == interesting ]; then

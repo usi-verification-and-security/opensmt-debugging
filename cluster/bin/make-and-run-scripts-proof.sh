@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 function get_abs_path {
@@ -9,7 +10,7 @@ SCRIPT_ROOT=$(get_abs_path $(dirname $0))
 BMBASE=${BMBASE:-~/benchmarks/}
 DEFAULTOSMT=${DEFAULTOSMT:-~/bin/opensmt}
 DEFAULTCONFIG=empty.smt2
-WORKSCRIPT=${SCRIPT_ROOT}/make_scripts_osmt2.sh
+WORKSCRIPT=${SCRIPT_ROOT}/make_scripts_osmt2_proofs.sh
 
 usage="Usage: $0 [-h] [-o <osmt2-binary>] [-c <config>] -b <QF_UF|QF_LRA|QF_LIA|QF_RDL|QF_IDL> [-f <flavor>] [-i true | false] [-m true | false]"
 

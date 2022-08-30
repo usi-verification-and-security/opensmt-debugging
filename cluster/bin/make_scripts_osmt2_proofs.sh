@@ -1,4 +1,5 @@
 
+
 #!/bin/bash
 
 
@@ -57,7 +58,7 @@ __EOF__
   sh -c "ulimit -St ${timeout};
   ulimit -Sv 4000000;
   /usr/bin/time -o \${osmt_time}.${i}.time -f 'user: %U system: %S wall: %e CPU: %PCPU' \$script \$config \$inp" || true; rm \${inp};
- ) > \$output.${i}.out 2> \$output.${i}.err &
+ ) > \$output.${i}.out 2> \$output.${i}.err & tar -cjf \$output.${i}.proof.tar ../proof &
 __EOF__
     done
     echo "wait" >> $scriptd/$scrname
